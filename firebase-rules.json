@@ -1,0 +1,38 @@
+{
+  "rules": {
+    "tournaments": {
+      ".read": true,
+      "$tid": {
+        ".write": "auth != null && root.child('secrets/admin').exists() && root.child('admins').child(auth.uid).val() === root.child('secrets/admin').val()",
+        "matches": {
+          ".write": "auth != null && root.child('secrets/pins').child($tid).exists() && root.child('access').child($tid).child(auth.uid).val() === root.child('secrets/pins').child($tid).val()"
+        },
+        "teams": {
+          "$team": {
+            "players": {
+              ".write": "auth != null && root.child('secrets/pins').child($tid).exists() && root.child('access').child($tid).child(auth.uid).val() === root.child('secrets/pins').child($tid).val()"
+            }
+          }
+        }
+      }
+    },
+    "secrets": {
+      ".read": false,
+      ".write": "auth != null && root.child('secrets/admin').exists() && root.child('admins').child(auth.uid).val() === root.child('secrets/admin').val()"
+    },
+    "admins": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid && root.child('secrets/admin').exists() && newData.val() === root.child('secrets/admin').val()"
+      }
+    },
+    "access": {
+      "$tid": {
+        "$uid": {
+          ".read": "auth != null && auth.uid === $uid",
+          ".write": "auth != null && auth.uid === $uid && root.child('secrets/pins').child($tid).exists() && newData.val() === root.child('secrets/pins').child($tid).val()"
+        }
+      }
+    }
+  }
+}
